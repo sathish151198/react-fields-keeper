@@ -61,5 +61,5 @@ export const examples = {
     Example28_nested_folder,
     Example29_SourceId,
     Example30_flat_group,
-    Example31_Custom_Styling_ClassName
+    Example31_Custom_Styling_ClassName,
 };

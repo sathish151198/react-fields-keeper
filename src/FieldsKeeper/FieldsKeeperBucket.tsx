@@ -40,7 +40,7 @@ export const FieldsKeeperBucket = (props: IFieldsKeeperBucketProps) => {
         wrapperClassName,
         orientation = 'vertical',
         horizontalFillOverflowType = 'scroll',
-        customClassNames
+        customClassNames,
     } = props;
 
     // state
@@ -68,7 +68,7 @@ export const FieldsKeeperBucket = (props: IFieldsKeeperBucketProps) => {
     }>(() => {
         const bucket = buckets.find((bucket) => bucket.id === id);
         if (!bucket) return { groupedItems: [], currentBucket: bucket };
-        
+
         return {
             currentBucket: bucket,
             groupedItems: getGroupedItems(bucket.items),
@@ -200,8 +200,8 @@ export const FieldsKeeperBucket = (props: IFieldsKeeperBucketProps) => {
         const foundInstanceIdChunk = foundInstanceId
             ? e.dataTransfer.getData(foundInstanceId)
             : '';
-        
-        const [idsChunk, sourceIdsChunk] = foundInstanceIdChunk.split('***') 
+
+        const [idsChunk, sourceIdsChunk] = foundInstanceIdChunk.split('***');
         const fieldItemIds = (idsChunk ?? '').split(',');
         const fieldSourceIds = (sourceIdsChunk ?? '').split(',');
 
@@ -209,30 +209,45 @@ export const FieldsKeeperBucket = (props: IFieldsKeeperBucketProps) => {
     };
 
     const onDropHandler = (e: React.DragEvent<HTMLDivElement>) => {
-        const { fromBucket, fieldItemIds, fieldItemIndex, fieldSourceIds } = getFieldItemIds(e);
-        
+        const { fromBucket, fieldItemIds, fieldItemIndex, fieldSourceIds } =
+            getFieldItemIds(e);
+
         const destinationBucket = buckets.find((b) => b.id === id);
         const getDropIndex = () => {
-            if((e.target as HTMLDivElement).classList.contains('react-fields-keeper-mapping-content-input')){
-                return (destinationBucket?.items.length ?? 0);
+            if (
+                (e.target as HTMLDivElement).classList.contains(
+                    'react-fields-keeper-mapping-content-input',
+                )
+            ) {
+                return destinationBucket?.items.length ?? 0;
             } else {
                 return Number(
                     (e.target as HTMLDivElement).getAttribute('data-index'),
                 );
             }
-        }
+        };
         const dropIndex = getDropIndex();
         const currentBucket = buckets.find((b) => b.id === fromBucket);
         const currentBucketfieldItems = currentBucket?.items?.filter?.((item) =>
-            fieldItemIds.some((fieldItemId) => (item.id) === fieldItemId)
+            fieldItemIds.some((fieldItemId) => item.id === fieldItemId),
         );
 
-        const fieldItemsRaw = currentBucketfieldItems ?? allItems.filter((item) =>
-            fieldItemIds.some((fieldItemId) => (item.id) === fieldItemId) ||  fieldSourceIds.some((fieldSourceId) => (item.sourceId) === fieldSourceId)
-        );
+        const fieldItemsRaw =
+            currentBucketfieldItems ??
+            allItems.filter(
+                (item) =>
+                    fieldItemIds.some(
+                        (fieldItemId) => item.id === fieldItemId,
+                    ) ||
+                    fieldSourceIds.some(
+                        (fieldSourceId) => item.sourceId === fieldSourceId,
+                    ),
+            );
 
-        const generateUniqueId = (itemId: string) => `${itemId}-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
-        const destinationItemIds = destinationBucket?.items?.map(item => item.id) ?? [];
+        const generateUniqueId = (itemId: string) =>
+            `${itemId}-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+        const destinationItemIds =
+            destinationBucket?.items?.map((item) => item.id) ?? [];
 
         const fieldItems = fieldItemsRaw.map((item) => {
             if (allowDuplicates && destinationItemIds.includes(item.id)) {
@@ -364,7 +379,7 @@ const GroupedItemRenderer = (
         fieldItemIndex,
         activeDraggedElementRef,
         onFieldItemLabelClick,
-        customClassNames
+        customClassNames,
     } = props;
 
     // state
@@ -399,7 +414,8 @@ const GroupedItemRenderer = (
                     item.group &&
                     item.group !== FIELDS_KEEPER_CONSTANTS.NO_GROUP_ID
                 ) {
-                    newLabels[item.group] = item.flatGroupLabel ?? item.groupLabel as string;
+                    newLabels[item.group] =
+                        item.flatGroupLabel ?? (item.groupLabel as string);
                 }
             });
             return newLabels;
@@ -427,7 +443,9 @@ const GroupedItemRenderer = (
             );
             e.dataTransfer.setData(
                 instanceId,
-                fieldItems.map((item) => (item.id)).join(',') + '***' + fieldItems.map((item) => (item.sourceId)).join(','),
+                fieldItems.map((item) => item.id).join(',') +
+                    '***' +
+                    fieldItems.map((item) => item.sourceId).join(','),
             );
             activeDraggedElementRef.current = e.target as HTMLDivElement;
         };
@@ -507,14 +525,15 @@ const GroupedItemRenderer = (
                 );
                 const isSuffixNodeRendererValid =
                     typeof suffixNodeRenderer === 'function';
-                const suffixNodeRendererOutput = isSuffixNodeRendererValid && !fieldItem.flatGroup 
-                    ? suffixNodeRenderer({
-                          bucketId: currentBucket.id,
-                          fieldItem,
-                          isGroupHeader,
-                          groupFieldItems: groupHeader?.groupItems,
-                      })
-                    : null;
+                const suffixNodeRendererOutput =
+                    isSuffixNodeRendererValid && !fieldItem.flatGroup
+                        ? suffixNodeRenderer({
+                              bucketId: currentBucket.id,
+                              fieldItem,
+                              isGroupHeader,
+                              groupFieldItems: groupHeader?.groupItems,
+                          })
+                        : null;
                 const isSuffixNodeValid =
                     suffixNodeRendererOutput !== undefined &&
                     suffixNodeRendererOutput !== null;
@@ -539,7 +558,12 @@ const GroupedItemRenderer = (
                                 autoFocus
                             />
                         ) : (
-                            <div className={classNames('react-fields-keeper-mapping-content-input-filled-value', customClassNames?.customLabelClassName)}>
+                            <div
+                                className={classNames(
+                                    'react-fields-keeper-mapping-content-input-filled-value',
+                                    customClassNames?.customLabelClassName,
+                                )}
+                            >
                                 {editedLabels[fieldItem.id]}
                             </div>
                         )}
@@ -606,7 +630,7 @@ const GroupedItemRenderer = (
                                 'react-fields-keeper-mapping-content-input-filled-custom-renderer':
                                     customItemRenderer !== undefined,
                             },
-                            customClassNames?.customFieldItemContainerClassName
+                            customClassNames?.customFieldItemContainerClassName,
                         )}
                         style={itemStyle}
                         draggable
@@ -656,7 +680,7 @@ const GroupedItemRenderer = (
                             orientation === 'horizontal',
                         'group-wrap': horizontalFillOverflowType === 'wrap',
                     },
-                    customClassNames?.customGroupContainerClassName
+                    customClassNames?.customGroupContainerClassName,
                 )}
             >
                 {/* group header */}
@@ -765,7 +789,9 @@ export function assignFieldItems(props: {
             bucket.items = bucket.items.filter((item, itemIndex) => {
                 const shouldKeepItem =
                     requiredFieldItems.some(
-                        (fieldItem) => (fieldItem.sourceId ?? fieldItem.id) === (item.sourceId ?? item.id),
+                        (fieldItem) =>
+                            (fieldItem.sourceId ?? fieldItem.id) ===
+                            (item.sourceId ?? item.id),
                     ) === false ||
                     restrictedItems.some(
                         (fieldItem) => fieldItem.id === item.id,
